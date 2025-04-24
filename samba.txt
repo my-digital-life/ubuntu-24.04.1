@@ -1,0 +1,45 @@
+sudo apt update && sudo apt -y upgrade # Start of samba install
+
+sudo chmod -R 0777 /media/ # I don't care I'm doin it
+sudo apt -y install samba smbclient cifs-utils
+sudo nano /etc/samba/smb.conf
+mkdir /media/pi23
+sudo chmod -R 0777 /media/pi23
+sudo smbpasswd -a pi23
+
+sudo systemctl restart smbd nmbd
+
+Add to .conf
+
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.1.bck && sudo rm -f /etc/samba/smb.conf
+sudo nano /etc/samba/smb.conf 
+We empty the file completely and add the following content:
+#======================= Global Settings =======================
+[global]
+workgroup = TOKEN
+security = user
+netbios name = pi20
+server string = Samba 4.x
+hosts allow = 192.168.1.0/255.255.255.0
+log level = 3
+map to guest = bad user
+
+[pi20]
+comment = Samba on pihole
+path =  /media/pi20
+browsable = yes
+writable = yes
+guest ok = yes
+guest only = yes
+force create mode = 0777
+force directory mode = 0777
+read only = no
+force group = nogroup
+force user = nobody
+
+
+Some usefull commands
+sudo apt -y install samba smbclient cifs-utils
+sudo systemctl daemon-reload
+sudo service smbd restart
+sudo systemctl restart smbd nmbd
